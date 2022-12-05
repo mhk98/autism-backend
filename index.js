@@ -1,4 +1,5 @@
 const express = require("express");
+const serverless = require("serverless-http");
 const cors = require("cors");
 const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
@@ -8,7 +9,7 @@ const SSLCommerzPayment = require("sslcommerz-lts");
 const bodyParser = require("body-parser");
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
