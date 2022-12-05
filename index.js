@@ -28,7 +28,14 @@ app.get("/", (req, res) => {
 // });
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.y3bgh.mongodb.net/?retryWrites=true&w=majority`;
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.0tfsev7.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.0tfsev7.mongodb.net/?retryWrites=true&w=majority`;
+// const client = new MongoClient(uri, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+//   serverApi: ServerApiVersion.v1,
+// });
+
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.r3fm7xk.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -44,13 +51,15 @@ async function run() {
     // const sslcommerSuccessCollection = database.collection("success");
     // const sslcommerFailedCollection = database.collection("failed");
 
-    const courseCollection = client.db("autism_care").collection("courses");
-    const userCollection = client.db("autism_care").collection("users");
+    const courseCollection = client
+      .db("autism_care_network")
+      .collection("courses");
+    const userCollection = client.db("autism_care_network").collection("users");
     const sslcommerSuccessCollection = client
-      .db("autism_care")
+      .db("autism_care_network")
       .collection("success");
     const sslcommerFailedCollection = client
-      .db("autism_care")
+      .db("autism_care_network")
       .collection("failed");
 
     // add course endpoints
