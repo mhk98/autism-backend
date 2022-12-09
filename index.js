@@ -125,19 +125,17 @@ async function run() {
 
     var card_number_local = 0;
     app.post("/sslrequest", async (req, res) => {
-      // console.log(req.body);
       const { amount, card_no } = req.body;
       card_number_local = card_no;
-      const TranId = `${shortid.generate()}`;
-      // console.log(TranId);
+      const transactionId = `${shortid.generate()}`;
       const data = {
         total_amount: amount,
         card_number: card_no,
         currency: "BDT",
-        tran_id: TranId,
-        success_url: `http://localhost:5000/sslsuccess?transactionId=${TranId}`,
-        fail_url: `http://localhost:5000/sslfailed?transactionId=${TranId}`,
-        cancel_url: `http://localhost:5000/sslcancel?transactionId=${TranId}`,
+        tran_id: transactionId,
+        success_url: `http://localhost:5000/sslsuccess?transactionId=${transactionId}`,
+        fail_url: `http://localhost:5000/sslfailed?transactionId=${transactionId}`,
+        cancel_url: `http://localhost:5000/sslcancel?transactionId=${transactionId}`,
         shipping_method: "No",
         product_name: "device_number.",
         product_category: "Electronic",
@@ -231,10 +229,12 @@ async function run() {
           currency_rate,
         })
         .then((res) => {
-          console.log(res);
+          // console.log(res);
         });
       // res.json(result);
-      res.redirect(`http://localhost:3000/paymentsuccess/${transactionId}`);
+      res.redirect(
+        `https://effulgent-raindrop-0613dd.netlify.app/paymentsuccess/${transactionId}`
+      );
     });
 
     app.get("/sslsuccess/:transactionId", async (req, res) => {
@@ -244,15 +244,27 @@ async function run() {
       res.send(result);
     });
 
-    app.post("sslfailed", async (req, res) => {
-      const data = req.body;
-      const result = await sslcommerFailedCollection
-        .insertOne(data)
-        .then((res) => {
-          res.json(result);
-        });
+    app.post("/sslfailed", async (req, res) => {
+      const { transactionId } = req.query;
 
-      res.redirect(`http://localhost:3000/failed/${transactionId}`);
+      // const { transactionId } = req.query;
+      // const data = req.body;
+      // const result = await sslcommerFailedCollection
+      //   .insertOne({ data })
+      //   .then((res) => {
+      //     console.log(res);
+      //   });
+
+      res.redirect(
+        `https://effulgent-raindrop-0613dd.netlify.app/paymentfailed/${transactionId}`
+      );
+    });
+
+    app.get("/sslfailed/:transactionId", async (req, res) => {
+      const transactionId = req.params.transactionId;
+      const query = { tran_id: transactionId };
+      const result = await sslcommerFailedCollection.findOne(query);
+      res.send(result);
     });
   } finally {
     // await client.close();
