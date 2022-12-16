@@ -54,6 +54,9 @@ async function run() {
       .db("autism_care_network")
       .collection("courses");
     const userCollection = client.db("autism_care_network").collection("users");
+    const profileCollection = client
+      .db("autism_care_network")
+      .collection("profiles");
     const sslcommerSuccessCollection = client
       .db("autism_care_network")
       .collection("success");
@@ -123,6 +126,11 @@ async function run() {
       res.send(course);
     });
 
+    app.get("/profile", async (req, res) => {
+      const result = await profileCollection.find({}).toArray();
+      res.send(result);
+    });
+
     var card_number_local = 0;
     app.post("/sslrequest", async (req, res) => {
       const { amount, card_no } = req.body;
@@ -133,9 +141,9 @@ async function run() {
         card_number: card_no,
         currency: "BDT",
         tran_id: transactionId,
-        success_url: `http://localhost:5000/sslsuccess?transactionId=${transactionId}`,
-        fail_url: `http://localhost:5000/sslfailed?transactionId=${transactionId}`,
-        cancel_url: `http://localhost:5000/sslcancel?transactionId=${transactionId}`,
+        success_url: `https://autism-backend-production.up.railway.app/sslsuccess?transactionId=${transactionId}`,
+        fail_url: `https://autism-backend-production.up.railway.app/sslfailed?transactionId=${transactionId}`,
+        cancel_url: `https://autism-backend-production.up.railway.app/sslcancel?transactionId=${transactionId}`,
         shipping_method: "No",
         product_name: "device_number.",
         product_category: "Electronic",
