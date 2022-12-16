@@ -255,14 +255,6 @@ async function run() {
     app.post("/sslfailed", async (req, res) => {
       const { transactionId } = req.query;
 
-      // const { transactionId } = req.query;
-      // const data = req.body;
-      // const result = await sslcommerFailedCollection
-      //   .insertOne({ data })
-      //   .then((res) => {
-      //     console.log(res);
-      //   });
-
       res.redirect(
         `https://effulgent-raindrop-0613dd.netlify.app/paymentfailed/${transactionId}`
       );
