@@ -1,4 +1,6 @@
 const express = require("express");
+const app = express();
+const server = require("http").createServer(app);
 const cors = require("cors");
 const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
@@ -6,8 +8,15 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const shortid = require("shortid");
 const SSLCommerzPayment = require("sslcommerz-lts");
 const bodyParser = require("body-parser");
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
-const app = express();
+app.use(cors());
+
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -63,6 +72,26 @@ async function run() {
     const sslcommerFailedCollection = client
       .db("autism_care_network")
       .collection("failed");
+
+    io.on("connection", (socket) => {
+      socket.emit("me", socket.id);
+      console.log("emit me ran");
+
+      socket.on("disconnect", () => {
+        socket.broadcast.emit("callended");
+      });
+
+      socket.on("calluser", ({ userToCall, signalData, from, name }) => {
+        console.log("calluser ran");
+        io.to(userToCall).emit("calluser", { signal: signalData, from, name });
+        console.log("calluser emitted");
+      });
+
+      socket.on("answercall", (data) => {
+        io.to(data.to).emit("callaccepted", { signal: data.signal });
+        console.log("callaccepted emitted");
+      });
+    });
 
     // add course endpoints
     app.post("/course", async (req, res) => {
