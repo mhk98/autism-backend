@@ -193,7 +193,7 @@ async function run() {
         // value_c: 'ref003_C',
         value_d: "ref004_D",
         ipn_url:
-          "http://localhost:4000/api/v1/sslcommerz/ssl-payment-notification",
+          "https://autism-backend-production.up.railway.app/sslcommerz/ssl-payment-notification",
       };
       // const sslcommerz = new SSLCommerzPayment(
       //   process.env.STORE_ID,
@@ -270,7 +270,7 @@ async function run() {
         });
       // res.json(result);
       res.redirect(
-        `https://effulgent-raindrop-0613dd.netlify.app/paymentsuccess/${transactionId}`
+        `https://autismcarenetwork.netlify.app/paymentsuccess/${transactionId}`
       );
     });
 
@@ -285,7 +285,7 @@ async function run() {
       const { transactionId } = req.query;
 
       res.redirect(
-        `https://effulgent-raindrop-0613dd.netlify.app/paymentfailed/${transactionId}`
+        `https://autismcarenetwork.netlify.app/paymentfailed/${transactionId}`
       );
     });
 
