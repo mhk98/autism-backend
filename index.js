@@ -8,12 +8,12 @@ const { MongoClient, ServerApiVersion } = require("mongodb");
 const shortid = require("shortid");
 const SSLCommerzPayment = require("sslcommerz-lts");
 const bodyParser = require("body-parser");
-// const io = require("socket.io")(server, {
-//   cors: {
-//     origin: "*",
-//     methods: ["GET", "POST"],
-//   },
-// });
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
 app.use(cors());
 
@@ -73,25 +73,25 @@ async function run() {
       .db("autism_care_network")
       .collection("failed");
 
-    // io.on("connection", (socket) => {
-    //   socket.emit("me", socket.id);
-    //   console.log("emit me ran");
+    io.on("connection", (socket) => {
+      socket.emit("me", socket.id);
+      console.log("emit me ran");
 
-    //   socket.on("disconnect", () => {
-    //     socket.broadcast.emit("callended");
-    //   });
+      socket.on("disconnect", () => {
+        socket.broadcast.emit("callended");
+      });
 
-    //   socket.on("calluser", ({ userToCall, signalData, from, name }) => {
-    //     console.log("calluser ran");
-    //     io.to(userToCall).emit("calluser", { signal: signalData, from, name });
-    //     console.log("calluser emitted");
-    //   });
+      socket.on("calluser", ({ userToCall, signalData, from, name }) => {
+        console.log("calluser ran");
+        io.to(userToCall).emit("calluser", { signal: signalData, from, name });
+        console.log("calluser emitted");
+      });
 
-    //   socket.on("answercall", (data) => {
-    //     io.to(data.to).emit("callaccepted", { signal: data.signal });
-    //     console.log("callaccepted emitted");
-    //   });
-    // });
+      socket.on("answercall", (data) => {
+        io.to(data.to).emit("callaccepted", { signal: data.signal });
+        console.log("callaccepted emitted");
+      });
+    });
 
     // add course endpoints
     app.post("/course", async (req, res) => {
@@ -266,7 +266,7 @@ async function run() {
           currency_rate,
         })
         .then((res) => {
-          // console.log(res)
+          // console.log(res);
         });
       // res.json(result);
       res.redirect(
@@ -302,5 +302,3 @@ async function run() {
 run().catch(console.dir);
 
 app.listen(port, () => console.log(`response from http://localhost:${port}`));
-
-module.exports = app;
