@@ -266,7 +266,7 @@ async function run() {
           currency_rate,
         })
         .then((res) => {
-          // console.log(res);
+          // console.log(res)
         });
       // res.json(result);
       res.redirect(
