@@ -9,12 +9,12 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const shortid = require("shortid");
 const SSLCommerzPayment = require("sslcommerz-lts");
 const bodyParser = require("body-parser");
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "*",
-    methods: ["GET", "POST"],
-  },
-});
+// const io = require("socket.io")(server, {
+//   cors: {
+//     origin: "*",
+//     methods: ["GET", "POST"],
+//   },
+// });
 
 // app.use(cors());
 
@@ -80,6 +80,9 @@ async function run() {
       .db("autism_care_network")
       .collection("courses");
     const userCollection = client.db("autism_care_network").collection("users");
+    const modulesCollection = client
+      .db("autism_care_network")
+      .collection("modules");
     const profileCollection = client
       .db("autism_care_network")
       .collection("profiles");
@@ -87,6 +90,9 @@ async function run() {
       .db("autism_care_network")
       .collection("success");
     const sslcommerFailedCollection = client
+      .db("autism_care_network")
+      .collection("failed");
+    const forumCollection = client
       .db("autism_care_network")
       .collection("failed");
     const serviceCollection = client
@@ -103,25 +109,25 @@ async function run() {
       .db("autism_care_network")
       .collection("payments");
 
-    io.on("connection", (socket) => {
-      socket.emit("me", socket.id);
-      console.log("emit me ran");
+    // io.on("connection", (socket) => {
+    //   socket.emit("me", socket.id);
+    //   console.log("emit me ran");
 
-      socket.on("disconnect", () => {
-        socket.broadcast.emit("callended");
-      });
+    //   socket.on("disconnect", () => {
+    //     socket.broadcast.emit("callended");
+    //   });
 
-      socket.on("calluser", ({ userToCall, signalData, from, name }) => {
-        console.log("calluser ran");
-        io.to(userToCall).emit("calluser", { signal: signalData, from, name });
-        console.log("calluser emitted");
-      });
+    //   socket.on("calluser", ({ userToCall, signalData, from, name }) => {
+    //     console.log("calluser ran");
+    //     io.to(userToCall).emit("calluser", { signal: signalData, from, name });
+    //     console.log("calluser emitted");
+    //   });
 
-      socket.on("answercall", (data) => {
-        io.to(data.to).emit("callaccepted", { signal: data.signal });
-        console.log("callaccepted emitted");
-      });
-    });
+    //   socket.on("answercall", (data) => {
+    //     io.to(data.to).emit("callaccepted", { signal: data.signal });
+    //     console.log("callaccepted emitted");
+    //   });
+    // });
 
     // add course endpoints
     app.post("/course", async (req, res) => {
@@ -190,6 +196,16 @@ async function run() {
       res.send(result);
     });
 
+    app.post("/post", async (req, res) => {
+      const data = req.body;
+      const result = await forumCollection.insertOne(data);
+      res.send(result);
+    });
+    app.get("/post", async (req, res) => {
+      const result = await forumCollection.find().toArray();
+      res.send(result);
+    });
+
     // admin panel
     const verifyAdmin = async (req, res, next) => {
       const requester = req.decoded.email;
@@ -217,14 +233,26 @@ async function run() {
 
     app.get("/service", async (req, res) => {
       const query = {};
-      const cursor = serviceCollection.find(query).project({ name: 1 });
-      const services = await cursor.toArray();
+      // const cursor = serviceCollection.find(query).project({ name: 1 });
+      // const services = await cursor.toArray();
+      const services = await serviceCollection.find().toArray();
       res.send(services);
     });
 
     app.get("/user", async (req, res) => {
       const users = await usersCollection.find().toArray();
       res.send(users);
+    });
+    app.get("/module", async (req, res) => {
+      const result = await modulesCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/module/:id", async (req, res) => {
+      const id = req.params.id;
+      console.log("id", id);
+      const query = { _id: ObjectId(id) };
+      const result = await modulesCollection.findOne(query);
+      res.send(result);
     });
 
     app.get("/admin/:email", async (req, res) => {
@@ -338,7 +366,7 @@ async function run() {
       }
       const result = await bookingCollection.insertOne(booking);
       console.log("sending email");
-      sendAppointmentEmail(booking);
+      // sendAppointmentEmail(booking);
       return res.send({ success: true, result });
     });
 
