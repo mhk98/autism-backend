@@ -196,6 +196,13 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/profile/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await profileCollection.findOne(query);
+      res.send(result);
+    });
+
     app.post("/post", async (req, res) => {
       const data = req.body;
       const result = await forumCollection.insertOne(data);
